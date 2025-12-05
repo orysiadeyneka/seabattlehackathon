@@ -1,0 +1,41 @@
+[
+  {
+    "id": "c0343edd-2665-4200-915a-356d2c2b3766",
+    "name": "7000",
+    "passwordHash": "4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a",
+    "botUrl": "http://localhost:7000",
+    "createdAt": "2025-11-27T08:40:54.451Z",
+    "lastUpdateAt": "2025-11-27T08:41:16.623Z",
+    "stats": {
+      "wins": 144,
+      "losses": 0,
+      "draws": 0
+    }
+  },
+  {
+    "id": "78d3f132-8f99-4120-ac69-f0e7995f358c",
+    "name": "sniper",
+    "passwordHash": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "botUrl": "https://func-ihortestbt-dev.azurewebsites.net/api/",
+    "createdAt": "2025-12-03T21:12:13.263Z",
+    "lastUpdateAt": "2025-12-03T21:13:37.598Z",
+    "stats": {
+      "wins": 11,
+      "losses": 56,
+      "draws": 77
+    }
+  },
+  {
+    "id": "4ec79d97-0425-45c7-89c5-977eaa786b77",
+    "name": "4000",
+    "passwordHash": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "botUrl": "http://localhost:4000",
+    "createdAt": "2025-12-03T21:23:41.686Z",
+    "lastUpdateAt": "2025-12-03T21:23:44.556Z",
+    "stats": {
+      "wins": 4,
+      "losses": 70,
+      "draws": 69
+    }
+  }
+]

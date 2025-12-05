@@ -1,0 +1,61 @@
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background-color: #e4e7eb;
+  color: #212529;
+}
+
+.navbar-brand {
+  font-weight: 600;
+}
+
+.board-canvas {
+  background-color: transparent; /* light grey board background */
+  border-radius: 10px;
+}
+
+.log-panel, .history-panel {
+  max-height: 300px;
+  overflow-y: auto;
+  font-size: 0.85rem;
+}
+
+.log-entry {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 2px 0;
+}
+
+.log-entry .time {
+  color: #777;
+}
+
+.log-entry .msg {
+  margin-left: 4px;
+}
+
+.radar-highlight {
+  background-color: rgba(255, 255, 0, 0.15);
+}
+
+@keyframes board-shake {
+  0%   { transform: translate(0px, 0px); }
+  20%  { transform: translate(3px, -3px); }
+  40%  { transform: translate(-3px, 2px); }
+  60%  { transform: translate(2px, 3px); }
+  80%  { transform: translate(-2px, -2px); }
+  100% { transform: translate(0px, 0px); }
+}
+
+.shake-board {
+  animation: board-shake 0.25s linear;
+}
+
+@keyframes bannerSlideIn {
+  0% {
+    transform: translate(-50%, -100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+}
