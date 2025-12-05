@@ -362,10 +362,10 @@ Any language works! Popular choices:
 ✅ **Do This:**
 - Keep a clear **board representation** (track hits, misses, ships)
 - Track **visited cells** to avoid shooting twice
-- Implement **fast logic** (< 2 second responses)
+- Implement **fast logic** 
 - Use **radar strategically** (only once!)
 - Vary **ship placement** (especially hiding submarines)
-- Log important decisions locally
+
 
 ❌ **Avoid This:**
 - Slow algorithms (timeouts = loss)
@@ -373,26 +373,6 @@ Any language works! Popular choices:
 - Forgetting radar limit (second use = loss)
 - Assuming opponent placement patterns
 - Over-complicating the HTTP handler
-
-### Example Strategies
-
-1. **Hunt & Destroy**
-   - Systematically scan the board
-   - Focus fire on ship locations once found
-
-2. **Smart Radar Usage**
-   - Use radar on high-probability zones
-   - Combine with historical opponent data
-
-3. **Defensive Placement**
-   - Spread ships out (harder to find)
-   - Hide submarines in corners
-   - Keep battleship distant from other ships
-
-4. **Adaptive Tactics**
-   - Track opponent's shot patterns
-   - Predict likely next moves
-   - Adjust placement strategy between games
 
 ---
 
