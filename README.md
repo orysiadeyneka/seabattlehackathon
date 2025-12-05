@@ -1,190 +1,341 @@
-# Sea Battle Hackathon Server
+# Sea Battle Hackathon – Team Guide & Rules 
 
-This project is a **tournament orchestration server** for a Sea Battle (Battleship) hackathon.  
-It registers bots, runs round-robin tournaments, calls bots via REST, and visualizes games in the browser.
+## 1. Overview 
 
-> **Note:** This implementation is a reference / starter project.  
-> The core architecture, APIs, and data model match the specification, but some game logic details can be extended or tweaked for your specific event.
+In this hackathon you will build an autonomous bot that plays an enhanced version of Sea Battle (Battleship). 
 
----
+You write a web service (any language) that exposes two HTTP endpoints: 
 
-## 1. Tech Stack
+POST /placement 
 
-- **Backend:** Node.js (18+, using built-in fetch), Express
-- **WebSocket:** `ws` (server → visualization clients)
-- **Frontend:** Static HTML + Bootstrap + Canvas + vanilla JS
-- **Storage:** JSON files in `data/` (bots, tournaments, matches)
+POST /move 
 
----
+Our tournament server: 
 
-## 2. Quick Start
+Registers your bot URL. 
 
-### Prerequisites
+Calls your endpoints during matches. 
 
-- Node.js **18+** (for global `fetch`)
-- npm
+Runs continuous round-robin tournaments. 
 
-### Install
+Visualizes games live in a browser. 
 
-```bash
-npm install
-```
+Keeps a global leaderboard. 
 
-### Configure
+Your goal: design a bot that wins as many matches as possible against other teams. 
 
-Edit `.env` (created in the project root):
+ 
 
-```env
-ADMIN_PASSWORD=change_me
-STORAGE_PATH=data
-PORT=3000
-```
+## 2. Game Rules 
 
-### Run
+2.1 Board 
 
-```bash
-npm start
-```
+Grid size: 10×10. 
 
-Server will start at `http://localhost:3000`.
+Coordinates: 
 
----
+x – 0 to 9 (columns, left → right) 
 
-## 3. Pages
+y – 0 to 9 (rows, top → bottom) 
 
-- **Lobby:** `GET /`
-  - Register bot
-  - Set bot URL
-  - View bots
-- **Visualization:** `GET /view`
-  - See current match animation
-  - Live leaderboard
-- **Admin Panel:** `GET /admin`
-  - Protected with `ADMIN_PASSWORD`
-  - Start / Pause / Continue tournament loop
-  - Remove bots
-  - View/clear tournament history
+### 2.2 Fleet Composition 
 
----
+Each bot places the following ships: 
 
-## 4. Admin Authentication
+1 × fourdeck – 4 cells 
 
-All admin API endpoints expect a header:
+2 × threeship (3-deck ships), one of which is a Battleship 
 
-```http
-X-Admin-Password: <ADMIN_PASSWORD from .env>
-```
+3 × twoship (2-deck ships), one of which is a Submarine 
 
-The `/admin` page will prompt for the password and store it in `sessionStorage`, then send it with each fetch call.
+4 × oneship – 1 cell each 
 
----
+Special ships 
 
-## 5. Bot API
+Battleship (type: "battleship", size 3) 
 
-Bots must expose two endpoints:
+Each cell has armor: needs 2 hits to destroy. 
 
-### `POST /placement`
+Visualized as violet. 
 
-Request body:
+Submarine (type: "submarine", size 2) 
 
-```json
-{
-  "gameId": "xyz",
-  "boardSize": 10
-}
-```
+Invisible to radar (see below). 
 
-Response body:
+Visualized as yellow. 
 
-```json
-{
-  "ships": [
-    { "type": "fourdeck", "cells": [ { "x":1,"y":2 }, ... ] },
-    ...
-  ]
-}
-```
+All other ships are visualized in blue. 
 
-### `POST /move`
+### 2.3 Placement Rules 
 
-Request body:
+Ships must be straight (horizontal or vertical). 
 
-```json
-{
-  "gameId": "xyz",
-  "turn": 12,
-  "yourShots": [
-    { "x": 1, "y": 1, "result": "miss" },
-    { "x": 3, "y": 5, "result": "hit" },
-    { "x": 3, "y": 6, "result": "sunk" }
-  ],
-  "opponentShots": [
-    { "x": 0, "y": 0, "result": "miss" },
-    { "x": 2, "y": 2, "result": "hit" }
-  ],
-  "radarUsed": false,
-  "radarHistory": [
-    {
-      "center": {"x":5,"y":5},
-      "visibleCells": [
-        { "x":5, "y":4 }, ...
-      ]
-    }
-  ]
-}
-```
+Ships cannot overlap. 
 
-Response body (shot):
+Ships cannot touch – no shared edges or diagonals. 
 
-```json
-{ "type": "shot", "x": 4, "y": 7 }
-```
+The placement you return must match the exact counts and types above. 
 
-or (radar):
+Invalid placements lose the match by forfeit. 
 
-```json
-{ "type": "radar", "center": {"x":5, "y":5} }
-```
+### 2.4 Radar – Special Move 
 
----
+Each bot may use radar once per game. 
 
-## 6. Project Structure
+Radar chooses a 3×3 area centered on a cell. 
 
-```text
-src/
-  server.js                # Express app + WebSocket server
-  services/
-    storage.js             # JSON-based storage abstraction
-    botService.js          # CRUD for bots
-    tournamentEngine.js    # Round-robin tournament loop
-    matchEngine.js         # Single match runner (placement, moves)
-    gameRules.js           # Game rules & validation
-    visualizationController.js  # WebSocket broadcasting
-  routes/
-    bots.js                # Lobby APIs
-    admin.js               # Admin APIs (incl. clear history)
+The server reveals any ship cells inside that area, except submarines. 
 
-public/
-  index.html               # Lobby UI (light theme)
-  view.html                # Visualization UI (light theme, radar highlight)
-  admin.html               # Admin UI (light theme, clear history)
-  css/styles.css
-  js/lobby.js
-  js/view.js
-  js/admin.js
+Radar has no direct damage, it’s only information. 
 
-data/
-  bots.json
-  tournaments.json
-  matches.json
-```
+Using radar a second time automatically loses the match. 
 
----
+### 2.5 Win / Draw Conditions 
 
-## 7. Limitations & Extensions
+Immediate win: you destroy all enemy ship cells. 
 
-- This implementation focuses on **clarity and hackathon readiness**.
-- Game rule edge cases (e.g. invalid bot responses, malformed boards) are handled defensively, but you might want tighter validation or penalties.
-- You can switch to SQLite by replacing `storage.js` with a DB-backed implementation while keeping the same interface.
+Moves limit: each bot may make at most 107 moves (shots or radar). 
 
-Enjoy your Sea Battle hackathon! 🚢🔥
+If at least one bot still has ships alive when both bots have used their 200 moves: 
+
+Count enemy ship cells hit by each bot (including armored hits on Battleship cells). 
+
+The bot with more hits wins. 
+
+If hits are exactly equal, the match is a draw. 
+
+ 
+
+## 3. Bot API 
+
+Your bot is an HTTP service reachable by the server. 
+
+### 3.1 General Requirements 
+
+Protocol: HTTP (no HTTPS required on localhost). 
+
+Format: JSON. 
+
+HTTP status: 
+
+200 OK for valid responses. 
+
+Anything else (errors/timeouts) will be treated as a failure. 
+
+Timeout: you must respond in ≤ 2 seconds. Otherwise you lose the match. 
+
+You can log and store whatever you want locally; the server is stateless about your internal logic. 
+
+ 
+
+### 3.2 POST /placement 
+
+The server calls this once at the beginning of each game. 
+
+Request 
+
+{ 
+  "gameId": "xyz", 
+  "boardSize": 10 
+} 
+ 
+
+Response 
+
+{ 
+  "ships": [ 
+    { 
+      "type": "fourdeck", 
+      "cells": [ { "x": 3, "y": 3 }, { "x": 4, "y": 3 }, { "x": 5, "y": 3 }, { "x": 6, "y": 3 } ] 
+    }, 
+    { 
+      "type": "battleship", 
+      "cells": [ { "x": 4, "y": 6 }, { "x": 5, "y": 6 }, { "x": 6, "y": 6 } ] 
+    }, 
+    { 
+      "type": "threeship", 
+      "cells": [ { "x": 0, "y": 6 }, { "x": 1, "y": 6 }, { "x": 2, "y": 6 } ] 
+    }, 
+    { 
+      "type": "submarine", 
+      "cells": [ { "x": 9, "y": 1 }, { "x": 9, "y": 2 } ] 
+    }, 
+    { 
+      "type": "twoship", 
+      "cells": [ { "x": 9, "y": 6 }, { "x": 9, "y": 7 } ] 
+    }, 
+    { 
+      "type": "twoship", 
+      "cells": [ { "x": 5, "y": 1 }, { "x": 6, "y": 1 } ] 
+    }, 
+    { "type": "oneship", "cells": [ { "x": 0, "y": 0 } ] }, 
+    { "type": "oneship", "cells": [ { "x": 6, "y": 9 } ] }, 
+    { "type": "oneship", "cells": [ { "x": 4, "y": 8 } ] }, 
+    { "type": "oneship", "cells": [ { "x": 2, "y": 1 } ] } 
+  ] 
+} 
+ 
+
+Notes 
+
+Your placement must obey all fleet + adjacency rules. 
+
+If you return invalid JSON or wrong fleet → auto-loss. 
+
+ 
+
+### 3.3 POST /move 
+
+Called once for each of your turns. 
+
+Request 
+
+{ 
+  "gameId": "xyz", 
+  "turn": 12, 
+  "yourShots": [ 
+    { "x": 1, "y": 1, "result": "miss" }, 
+    { "x": 3, "y": 5, "result": "hit" }, 
+    { "x": 3, "y": 6, "result": "sunk" } 
+  ], 
+  "opponentShots": [ 
+    { "x": 0, "y": 0, "result": "miss" }, 
+    { "x": 2, "y": 2, "result": "hit" } 
+  ], 
+  "radarUsed": false, 
+  "radarHistory": [ 
+    { 
+      "center": { "x": 5, "y": 5 }, 
+      "visibleCells": [ { "x": 5, "y": 4 }, { "x": 6, "y": 5 } ] 
+    } 
+  ] 
+} 
+ 
+
+yourShots – all previous shots you fired with their outcomes. 
+
+opponentShots – enemy shots against you with their outcomes. 
+
+radarUsed – true if you already used radar in this game. 
+
+radarHistory – previous radar calls and revealed cells. 
+
+Response – shot 
+
+{ "type": "shot", "x": 4, "y": 7 } 
+ 
+
+Response – radar 
+
+{ "type": "radar", "center": { "x": 5, "y": 5 } } 
+ 
+
+Constraints 
+
+Exactly one move per call. 
+
+type must be either "shot" or "radar". 
+
+Coordinates must be within the board (0–9). 
+
+Invalid moves / illegal second radar → loss. 
+
+ 
+
+## 4. Tournament Format & Scoring 
+
+### 4.1 Round-Robin Tournaments 
+
+Each tournament: 
+
+All bots that currently have a registered URL play each other once. 
+
+Order of matches is randomized. 
+
+Tournaments run continuously (with short pauses between matches / tournaments). 
+
+Only one match at a time is running. 
+
+### 4.2 Match Result Types 
+
+Win – all enemy ships destroyed, or you win on the 200-move hit comparison, or the opponent times out / errors / breaks rules. 
+
+Loss – the opposite of win. 
+
+Draw – both bots reach 200 moves, still have ships, and total hits are exactly equal. 
+
+### 4.3 Leaderboards 
+
+Two leaderboards are displayed in the UI: 
+
+All Matches Leaderboard 
+
+Aggregated over all tournaments. 
+
+For each bot: 
+
+Wins, Draws, Losses. 
+
+Current Tournament Leaderboard 
+
+Only matches within the currently running tournament. 
+
+Ties in the leaderboard are not further broken (same W-D-L = same rank). 
+
+ 
+
+## 5. Registration & Lobby 
+
+### 5.1 Creating a Bot Entry 
+
+Via the lobby UI: 
+
+Click “Join the Battle”. 
+
+Enter: 
+
+Bot name (must be unique). 
+
+Password + confirm password (used later to update your URL). 
+
+Your bot appears in the list. 
+
+### 5.2 Setting / Updating Bot URL 
+
+In the lobby, click “Set Bot URL” on your bot row. 
+
+Enter: 
+
+Bot service base URL, e.g. http://localhost:4000 
+
+Your bot password. 
+
+You can update the URL anytime (e.g. if you restart on another port). 
+
+### 5.3 Security 
+
+Name must be unique. 
+
+Password is required for any URL changes. 
+
+Don’t share your password with other teams. 
+
+ 
+
+## 6. Technical Tips for Teams 
+
+You can use any language / framework as long as you expose HTTP endpoints with the described JSON. 
+
+Recommended: 
+
+Keep a clear internal board representation. 
+
+Track visited cells so you don’t shoot the same place twice (except battleship). 
+
+Handle timeouts by ensuring your logic is not too heavy. 
+
+Carefully implement radar usage logic (only once!). 
+
+ 
+
+ 
