@@ -54,10 +54,10 @@ You write a web service (any language) that exposes two HTTP endpoints:
 |-----------|-------|------|---------|
 | 🟦 **Fourdeck** | 1 | 4 cells | Standard ship |
 | 🟣 **Battleship** | 1 | 3 cells | **2 hits per cell** (armored) |
-| 🟩 **Threeship** | 2 | 3 cells | One is battleship |
+| 🟦 **Threeship** | 2 | 3 cells | One is battleship |
 | 🟡 **Submarine** | 1 | 2 cells | **Invisible to radar** |
-| 🟩 **Twoship** | 3 | 2 cells | One is submarine |
-| ⬜ **Oneship** | 4 | 1 cell | Single cell |
+| 🟦 **Twoship** | 3 | 2 cells | One is submarine |
+| 🟦 **Oneship** | 4 | 1 cell | Single cell |
 
 ### 2.3 Placement Rules
 
