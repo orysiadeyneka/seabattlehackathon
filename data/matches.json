@@ -1,1 +1,74 @@
-[]
+[
+  {
+    "id": "af665762-75e7-4a80-88d9-9b80bada7d6d",
+    "tournamentId": "b6c45ea6-43a4-40d6-b3bb-15170d9aa05f",
+    "gameId": "a30a3374-16a5-4904-baae-8b9bd7d8ec00",
+    "matchNumber": 1,
+    "botAId": "1ceae72f-5c30-4d5e-bfb1-7b04dce98620",
+    "botBId": "0002de03-2576-4108-9762-c5901e90961e",
+    "winnerId": "1ceae72f-5c30-4d5e-bfb1-7b04dce98620",
+    "loserId": "0002de03-2576-4108-9762-c5901e90961e",
+    "reason": "placement_timeout_or_error",
+    "createdAt": "2025-12-05T15:00:24.308Z"
+  },
+  {
+    "id": "ce5c0b26-d4fa-4937-80c7-28c0f348aa49",
+    "tournamentId": "b6c45ea6-43a4-40d6-b3bb-15170d9aa05f",
+    "gameId": "e584f50d-6e35-49ec-95c6-364597719c38",
+    "matchNumber": 2,
+    "botAId": "0002de03-2576-4108-9762-c5901e90961e",
+    "botBId": "f8d3ae95-7cbc-40d6-a464-fd94e390bc42",
+    "winnerId": "f8d3ae95-7cbc-40d6-a464-fd94e390bc42",
+    "loserId": "0002de03-2576-4108-9762-c5901e90961e",
+    "reason": "placement_timeout_or_error",
+    "createdAt": "2025-12-05T15:00:34.535Z"
+  },
+  {
+    "id": "48479b99-4afa-4378-9315-5b01212d13cc",
+    "tournamentId": "b6c45ea6-43a4-40d6-b3bb-15170d9aa05f",
+    "gameId": "0bc488e1-c972-4039-b278-ff501a14fa6d",
+    "matchNumber": 3,
+    "botAId": "1ceae72f-5c30-4d5e-bfb1-7b04dce98620",
+    "botBId": "f8d3ae95-7cbc-40d6-a464-fd94e390bc42",
+    "winnerId": "1ceae72f-5c30-4d5e-bfb1-7b04dce98620",
+    "loserId": "f8d3ae95-7cbc-40d6-a464-fd94e390bc42",
+    "reason": "placement_timeout_or_error",
+    "createdAt": "2025-12-05T15:00:45.251Z"
+  },
+  {
+    "id": "a1c02850-de32-4965-b204-76dd0257d382",
+    "tournamentId": "4901fd6c-7c18-4bbf-8ca7-99f5ee70f90a",
+    "gameId": "897a3d74-dd8f-4b51-a8ad-0d5527d5a261",
+    "matchNumber": 1,
+    "botAId": "1ceae72f-5c30-4d5e-bfb1-7b04dce98620",
+    "botBId": "0002de03-2576-4108-9762-c5901e90961e",
+    "winnerId": "0002de03-2576-4108-9762-c5901e90961e",
+    "loserId": "1ceae72f-5c30-4d5e-bfb1-7b04dce98620",
+    "reason": "max_moves_reached",
+    "createdAt": "2025-12-05T15:02:25.128Z"
+  },
+  {
+    "id": "e3ab8973-9857-43fd-8f99-67471e2aa58c",
+    "tournamentId": "4901fd6c-7c18-4bbf-8ca7-99f5ee70f90a",
+    "gameId": "95a0ece8-c4ac-4ba9-a009-c5afd66733ca",
+    "matchNumber": 2,
+    "botAId": "1ceae72f-5c30-4d5e-bfb1-7b04dce98620",
+    "botBId": "f8d3ae95-7cbc-40d6-a464-fd94e390bc42",
+    "winnerId": "1ceae72f-5c30-4d5e-bfb1-7b04dce98620",
+    "loserId": "f8d3ae95-7cbc-40d6-a464-fd94e390bc42",
+    "reason": "placement_timeout_or_error",
+    "createdAt": "2025-12-05T15:02:35.621Z"
+  },
+  {
+    "id": "dcd5973d-9454-494d-b5e9-a3174878d4ef",
+    "tournamentId": "4901fd6c-7c18-4bbf-8ca7-99f5ee70f90a",
+    "gameId": "751b1950-ddcc-4d1a-af8d-059fbd134623",
+    "matchNumber": 3,
+    "botAId": "0002de03-2576-4108-9762-c5901e90961e",
+    "botBId": "f8d3ae95-7cbc-40d6-a464-fd94e390bc42",
+    "winnerId": "0002de03-2576-4108-9762-c5901e90961e",
+    "loserId": "f8d3ae95-7cbc-40d6-a464-fd94e390bc42",
+    "reason": "placement_timeout_or_error",
+    "createdAt": "2025-12-05T15:02:46.066Z"
+  }
+]

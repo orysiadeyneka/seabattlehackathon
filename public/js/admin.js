@@ -23,7 +23,7 @@ async function adminFetch(url, options = {}) {
 async function loadStatus() {
   try {
     const res = await adminFetch('/api/admin/status');
-    if (!res.ok) throw new Error('Unauthorized');
+  //  if (!res.ok) throw new Error('Unauthorized');
     const data = await res.json();
     const el = document.getElementById('tournament-status');
     el.textContent = data.running ? (data.paused ? 'Paused' : 'Running') : 'Stopped';

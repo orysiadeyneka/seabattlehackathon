@@ -1,1 +1,41 @@
-[]
+[
+  {
+    "id": "1ceae72f-5c30-4d5e-bfb1-7b04dce98620",
+    "name": "Destroyer",
+    "passwordHash": "9af15b336e6a9619928537df30b2e6a2376569fcf9d7e773eccede65606529a0",
+    "botUrl": "https://3b3081fce562.ngrok-free.app/",
+    "createdAt": "2025-12-05T13:44:51.986Z",
+    "lastUpdateAt": "2025-12-05T14:02:46.452Z",
+    "stats": {
+      "wins": 3,
+      "losses": 1,
+      "draws": 0
+    }
+  },
+  {
+    "id": "0002de03-2576-4108-9762-c5901e90961e",
+    "name": "Delta Bot",
+    "passwordHash": "ef29be0d3ea80661821979dc00f90835ff57526b714e89c5e74f9783f6105595",
+    "botUrl": "https://a69c0c724341.ngrok-free.app",
+    "createdAt": "2025-12-05T13:51:56.297Z",
+    "lastUpdateAt": "2025-12-05T14:01:59.607Z",
+    "stats": {
+      "wins": 2,
+      "losses": 2,
+      "draws": 0
+    }
+  },
+  {
+    "id": "f8d3ae95-7cbc-40d6-a464-fd94e390bc42",
+    "name": "BattleShip Bullies",
+    "passwordHash": "89fd4220aeac24e098e08b3ddc44e7dd172651a7fe3e1d82c485714e4af45193",
+    "botUrl": "https://lasonya-sardonic-maverick.ngrok-free.dev",
+    "createdAt": "2025-12-05T13:54:10.249Z",
+    "lastUpdateAt": "2025-12-05T14:37:57.949Z",
+    "stats": {
+      "wins": 1,
+      "losses": 3,
+      "draws": 0
+    }
+  }
+]

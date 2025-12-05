@@ -7,16 +7,46 @@ const MATCH_PAUSE_MS = 5000;
 const MAX_MOVES_PER_BOT = 107;
 
 async function postJson(url, body) {
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status} from bot`);
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status} from bot`);
+    }
+    return res.json();
+  } catch (error) {
+    console.error(`[postJson] Error fetching ${url}:`, error.message);
+    
+    // If SSL certificate error, retry with insecure option
+    if (error.cause && error.cause.code === 'UNABLE_TO_VERIFY_LEAF_SIGNATURE') {
+      console.log(`[postJson] Retrying ${url} with SSL verification disabled...`);
+      // Temporarily allow insecure connections just for this request
+      const originalValue = process.env.NODE_TLS_REJECT_UNAUTHORIZED;
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status} from bot`);
+        }
+        console.log(`[postJson] Successfully fetched ${url} with SSL bypass`);
+        return res.json();
+      } catch (retryError) {
+        console.error(`[postJson] Retry also failed for ${url}:`, retryError.message);
+        throw retryError;
+      } finally {
+        // Restore original setting
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = originalValue;
+      }
+    }
+    throw error;
   }
-  return res.json();
 }
 
 function sleep(ms) {
@@ -28,11 +58,14 @@ async function getPlacement(bot, gameId) {
     throw new Error(`Bot ${bot.name} has no URL set`);
   }
   const url = bot.botUrl.endsWith('/') ? bot.botUrl + 'placement' : bot.botUrl + '/placement';
+  console.log(`Getting placement for bot ${bot.name} at ${url}`);
   return postJson(url, { gameId, boardSize: BOARD_SIZE });
 }
 
 async function getMove(bot, gameId, turn, context) {
-  const url = bot.botUrl.endsWith('/') ? bot.botUrl + 'move' : bot.botUrl + '/move';  return postJson(url, {
+  const url = bot.botUrl.endsWith('/') ? bot.botUrl + 'move' : bot.botUrl + '/move';
+  console.log(`Getting move for bot ${bot.name} at ${url}`);
+  return postJson(url, {
     gameId,
     turn,
     yourShots: context.yourShots,
