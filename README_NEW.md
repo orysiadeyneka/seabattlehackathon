@@ -1,5 +1,15 @@
 # 🎯 Sea Battle Hackathon – Team Guide & Rules
 
+<div align="center">
+
+**Build an autonomous bot to play an enhanced version of Battleship!**
+
+[Overview](#-1-overview) • [Game Rules](#-2-game-rules) • [Bot API](#-3-bot-api) • [Tournament](#-4-tournament-format--scoring) • [Registration](#-5-registration--lobby)
+
+</div>
+
+---
+
 ## 📖 1. Overview
 
 In this hackathon you will build an autonomous bot that plays an enhanced version of **Sea Battle (Battleship)**.
@@ -8,12 +18,15 @@ You write a web service (any language) that exposes two HTTP endpoints:
 - `POST /placement`
 - `POST /move`
 
-**Our tournament server:**
-- ✅ Registers your bot URL
-- ✅ Calls your endpoints during matches
-- ✅ Runs continuous round-robin tournaments
-- ✅ Visualizes games live in a browser
-- ✅ Keeps a global leaderboard
+### Our Tournament Server
+
+| Feature | Details |
+|---------|---------|
+| 🤖 **Bot Registration** | Register your bot URL |
+| 🎮 **Match Calling** | Calls your endpoints during matches |
+| 🏆 **Tournaments** | Runs continuous round-robin tournaments |
+| 👀 **Live Visualization** | Watch games live in a browser |
+| 📊 **Global Leaderboard** | Keeps track of all bot performance |
 
 **Your goal:** Design a bot that wins as many matches as possible against other teams.
 
@@ -22,75 +35,110 @@ You write a web service (any language) that exposes two HTTP endpoints:
 ## 🎮 2. Game Rules
 
 ### 2.1 Board
+
+```
+   0 1 2 3 4 5 6 7 8 9
+0  . . . . . . . . . .
+1  . . . . . . . . . .
+2  . . . . . . . . . .
+...
+9  . . . . . . . . . .
+```
+
 - **Grid size:** 10×10
-- **Coordinates:**
-  - `x` – 0 to 9 (columns, left → right)
-  - `y` – 0 to 9 (rows, top → bottom)
+- **Coordinates:** `x` (0-9, columns), `y` (0-9, rows)
 
 ### 2.2 Fleet Composition
 
-Each bot places the following ships:
-
-| Ship Type | Count | Size | Special |
+| Ship Type | Count | Size | Details |
 |-----------|-------|------|---------|
-| **Fourdeck** | 1 | 4 cells | — |
-| **Battleship** | 1 | 3 cells | 2 hits per cell (armored) |
-| **Threeship** | 2* | 3 cells | — |
-| **Submarine** | 1 | 2 cells | Invisible to radar |
-| **Twoship** | 3* | 2 cells | — |
-| **Oneship** | 4 | 1 cell | — |
-
-*One of each is marked as special.
-
-**Visual appearance:**
-- 🟣 **Battleship** – Violet
-- 🟡 **Submarine** – Yellow
-- 🔵 **Other ships** – Blue
+| 🟦 **Fourdeck** | 1 | 4 cells | Standard ship |
+| 🟣 **Battleship** | 1 | 3 cells | **2 hits per cell** (armored) |
+| 🟩 **Threeship** | 2 | 3 cells | One is battleship |
+| 🟡 **Submarine** | 1 | 2 cells | **Invisible to radar** |
+| 🟩 **Twoship** | 3 | 2 cells | One is submarine |
+| ⬜ **Oneship** | 4 | 1 cell | Single cell |
 
 ### 2.3 Placement Rules
-- Ships must be **straight** (horizontal or vertical)
-- Ships **cannot overlap**
-- Ships **cannot touch** (no shared edges or diagonals)
-- The placement you return must match the exact counts and types
-- ❌ **Invalid placements = automatic loss**
+
+Your ships must follow these rules:
+
+```
+✅ DO:
+  - Place ships straight (horizontal or vertical)
+  - Ensure ships don't overlap
+  - Keep ships separated (no touching edges or diagonals)
+  - Match the exact fleet composition
+
+❌ DON'T:
+  - Violate any rule above
+  - Return wrong fleet composition
+  - Invalid JSON format
+```
+
+**Consequence:** ❌ **Invalid placement = automatic loss**
 
 ### 2.4 Radar – Special Move
-- Each bot may use **radar once per game**
-- Radar reveals a **3×3 area** centered on a cell
-- Reveals any **ship cells**, except submarines
-- Radar has **no damage**, only information
-- ⚠️ **Using radar twice = automatic loss**
+
+> **Each bot gets ONE radar use per game**
+
+- **Target:** Choose a 3×3 area (centered on a cell)
+- **Reveal:** Shows all ship cells in the area **except submarines** 🟡
+- **Damage:** None (information only)
+- **Penalty:** Using radar twice = 🔴 **automatic loss**
 
 ### 2.5 Win / Draw Conditions
 
-| Condition | Result |
-|-----------|--------|
-| Destroy all enemy ship cells | **Immediate WIN** |
-| Opponent timeout / error | **WIN** |
-| Both bots reach 120 moves with ships alive | **Compare hits** |
-| — You have more hits | **WIN** |
-| — Opponent has more hits | **LOSS** |
-| — Hits are equal | **DRAW** |
+<table>
+  <tr>
+    <th>Condition</th>
+    <th>Result</th>
+  </tr>
+  <tr>
+    <td>Destroy all enemy ship cells</td>
+    <td>🏆 <b>Immediate WIN</b></td>
+  </tr>
+  <tr>
+    <td>Opponent timeout / error</td>
+    <td>🏆 <b>WIN</b></td>
+  </tr>
+  <tr>
+    <td>Both bots reach 120 moves with ships alive</td>
+    <td><b>Compare hits</b></td>
+  </tr>
+  <tr>
+    <td> → You have more hits</td>
+    <td>🏆 <b>WIN</b></td>
+  </tr>
+  <tr>
+    <td> → Opponent has more hits</td>
+    <td>💔 <b>LOSS</b></td>
+  </tr>
+  <tr>
+    <td> → Hits are exactly equal</td>
+    <td>🤝 <b>DRAW</b></td>
+  </tr>
+</table>
 
 ---
 
 ## 🔌 3. Bot API
 
-Your bot is an HTTP service reachable by the server.
+Your bot is an HTTP service that the tournament server will call.
 
 ### 3.1 General Requirements
-- **Protocol:** HTTP (no HTTPS required on localhost)
-- **Format:** JSON
-- **HTTP Status Codes:**
-  - `200 OK` – Valid response
-  - Anything else – Treated as failure
-- **Timeout:** You must respond in ≤ **2 seconds**
-- ⏱️ Slower responses = **automatic loss**
-- 💾 You can log locally; server is stateless about your logic
+
+| Requirement | Details |
+|-------------|---------|
+| **Protocol** | HTTP (no HTTPS needed on localhost) |
+| **Format** | JSON request/response |
+| **HTTP Status** | `200 OK` for success, anything else = failure |
+| **Timeout** | ⏱️ **2 seconds max** – slower = loss |
+| **Logging** | You can log locally; server doesn't track your logic |
 
 ### 3.2 POST /placement
 
-Called once at the beginning of each game.
+Called **once** at the start of each game.
 
 **Request:**
 ```json
@@ -100,7 +148,7 @@ Called once at the beginning of each game.
 }
 ```
 
-**Response:**
+**Response Example:**
 ```json
 {
   "ships": [
@@ -158,13 +206,13 @@ Called once at the beginning of each game.
 }
 ```
 
-**Notes:**
-- Your placement must obey all fleet & adjacency rules
-- ❌ Invalid JSON or wrong fleet = auto-loss
+**Validation:**
+- ✅ Must follow all fleet composition rules
+- ❌ Invalid JSON or wrong fleet = **auto-loss**
 
 ### 3.3 POST /move
 
-Called once for each of your turns.
+Called **once per turn** during gameplay.
 
 **Request:**
 ```json
@@ -193,13 +241,13 @@ Called once for each of your turns.
 }
 ```
 
-**Fields:**
-- `yourShots` – All previous shots you fired with results
+**Request Fields:**
+- `yourShots` – All your previous shots with results
 - `opponentShots` – Enemy shots against you with results
 - `radarUsed` – `true` if you already used radar in this game
 - `radarHistory` – Previous radar calls and revealed cells
 
-**Response – Shot:**
+**Response – Shoot:**
 ```json
 {
   "type": "shot",
@@ -208,7 +256,7 @@ Called once for each of your turns.
 }
 ```
 
-**Response – Radar:**
+**Response – Use Radar:**
 ```json
 {
   "type": "radar",
@@ -217,82 +265,143 @@ Called once for each of your turns.
 ```
 
 **Constraints:**
-- Exactly **one move** per call
+- Exactly **one move** per response
 - `type` must be `"shot"` or `"radar"`
-- Coordinates must be **within board** (0–9)
-- ❌ Invalid moves / illegal second radar = loss
+- Coordinates must be **0-9** (on board)
+- ❌ Invalid moves or second radar = **loss**
 
 ---
 
 ## 🏆 4. Tournament Format & Scoring
 
 ### 4.1 Round-Robin Tournaments
-- All bots with a registered URL play each other **once per tournament**
-- Order of matches is **randomized**
-- Tournaments run **continuously** (with pauses between)
-- Only **one match at a time** runs
 
-### 4.2 Match Result Types
+```
+Tournament Structure:
+├─ All bots with registered URLs play each other once
+├─ Matches are randomized order
+├─ Tournaments run continuously with pauses
+└─ Only ONE match runs at a time
+```
 
-| Result | When |
-|--------|------|
-| **WIN** | Destroy all enemy ships, or win on hits, or opponent fails |
-| **LOSS** | The opposite of WIN |
-| **DRAW** | Both reach move limit with ships alive + equal hits |
+### 4.2 Match Results
+
+| Result | Awarded When |
+|--------|--------------|
+| 🏆 **WIN** | Destroy all enemy ships, or win on hits, or opponent fails |
+| 💔 **LOSS** | Opposite of WIN |
+| 🤝 **DRAW** | Both reach 120 moves with ships + equal hits |
 
 ### 4.3 Leaderboards
 
-**All Matches Leaderboard:**
-- Aggregated over **all tournaments**
-- Shows: Wins, Draws, Losses
-- Ties are **not further broken**
+**All Matches Leaderboard 🌍**
+- Shows aggregate stats across **all tournaments**
+- Columns: Bot Name, Wins, Draws, Losses
+- Sorted by: Wins (desc) → Draws (desc) → Losses (asc)
 
-**Current Tournament Leaderboard:**
-- Only matches in the **current tournament**
-- Same sorting: Wins → Draws → Losses
+**Current Tournament Leaderboard 🎪**
+- Shows stats for **only the current tournament**
+- Same sorting as global leaderboard
 
 ---
 
 ## 📝 5. Registration & Lobby
 
-### 5.1 Creating a Bot Entry
-Via the lobby UI:
-1. Click **"Join the Battle"**
-2. Enter:
-   - **Bot name** (must be unique)
-   - **Password** + confirm password (used for URL updates)
-3. Your bot appears in the list
+### 5.1 Join the Battle
 
-### 5.2 Setting / Updating Bot URL
-In the lobby, click **"Set Bot URL"** on your bot row:
-1. Enter your **bot service base URL** (e.g., `http://localhost:4000` or `https://your-api.azurewebsites.net/api`)
-2. Enter your **bot password**
-3. ✅ You can update the URL anytime
+1. Navigate to the **Lobby** page
+2. Click **"Join the Battle"** button
+3. Fill in:
+   - **Bot Name** (must be unique across all teams)
+   - **Password** (used later to update URL)
+   - **Confirm Password**
+4. ✅ Your bot appears in the registered list
 
-### 5.3 Security
-- Bot names must be **unique**
-- Password is **required** for URL changes
-- 🔒 **Don't share your password** with other teams
+### 5.2 Set Your Bot URL
+
+1. Find your bot in the **Registered Bots** table
+2. Click **"Set URL"** button on your bot's row
+3. Enter:
+   - **Bot URL** – Your service base URL (e.g., `http://localhost:4000` or `https://your-api.azurewebsites.net/api`)
+   - **Password** – Your bot's password
+4. ✅ Your bot is now active and will participate in tournaments!
+
+### 5.3 Update Your Bot URL
+
+- You can update the URL **anytime** (e.g., restart on different port)
+- Click **"Set URL"** again with new URL and password
+- Takes effect **immediately**
+
+### Security Notes
+
+- 🔒 Bot names are **unique per team**
+- 🔒 Passwords are **required** for URL changes
+- 🔒 **Never share your password** with other teams
 
 ---
 
 ## 💡 6. Technical Tips for Teams
 
-**Language/Framework:** Any language works as long as you expose HTTP endpoints with the described JSON.
+### Getting Started
 
-**Recommended Strategies:**
-- ✅ Keep a clear **internal board representation**
-- ✅ Track **visited cells** so you don't shoot the same place twice
-- ✅ Handle **timeouts** – keep logic fast (< 2 seconds)
-- ✅ Carefully implement **radar usage logic** (only once!)
-- ✅ Consider **strategic placement** to minimize radar-invisible submarines hitting you
+<details>
+<summary><b>Pick Your Language</b></summary>
 
-**Example Bot Strategies:**
-- Hunt ships methodically
-- Use radar wisely on high-probability zones
-- Protect your own ships by varying placement
-- Track opponent patterns to predict next moves
+Any language works! Popular choices:
+- Python (Flask, FastAPI)
+- Node.js (Express)
+- C# (.NET)
+- Java (Spring Boot)
+- Go
+- Rust
+
+</details>
+
+### Best Practices
+
+✅ **Do This:**
+- Keep a clear **board representation** (track hits, misses, ships)
+- Track **visited cells** to avoid shooting twice
+- Implement **fast logic** (< 2 second responses)
+- Use **radar strategically** (only once!)
+- Vary **ship placement** (especially hiding submarines)
+- Log important decisions locally
+
+❌ **Avoid This:**
+- Slow algorithms (timeouts = loss)
+- Heavy computations in response handler
+- Forgetting radar limit (second use = loss)
+- Assuming opponent placement patterns
+- Over-complicating the HTTP handler
+
+### Example Strategies
+
+1. **Hunt & Destroy**
+   - Systematically scan the board
+   - Focus fire on ship locations once found
+
+2. **Smart Radar Usage**
+   - Use radar on high-probability zones
+   - Combine with historical opponent data
+
+3. **Defensive Placement**
+   - Spread ships out (harder to find)
+   - Hide submarines in corners
+   - Keep battleship distant from other ships
+
+4. **Adaptive Tactics**
+   - Track opponent's shot patterns
+   - Predict likely next moves
+   - Adjust placement strategy between games
 
 ---
 
-**Good luck! 🚀**
+<div align="center">
+
+## 🚀 Ready to Battle?
+
+**[Go to Lobby](http://localhost:3000)** • **[View Visualization](http://localhost:3000/view)** • **[Admin Panel](http://localhost:3000/admin)**
+
+**Good luck! 🎯**
+
+</div>
